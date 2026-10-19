@@ -392,13 +392,13 @@ fn render_settings_content(
     // Username input (child 0)
     content.username.focused = focus_states[0];
     let input = Input::new(&content.username).label("Username");
-    let region = input.render_stateful(f, chunks[0]);
+    let region = input.render_stateful(chunks[0], f.buffer_mut());
     content.click_regions.register(region.area, 0);
 
     // Email input (child 1)
     content.email.focused = focus_states[1];
     let input = Input::new(&content.email).label("Email");
-    let region = input.render_stateful(f, chunks[1]);
+    let region = input.render_stateful(chunks[1], f.buffer_mut());
     content.click_regions.register(region.area, 1);
 
     // Dark mode checkbox (child 2)

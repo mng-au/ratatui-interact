@@ -245,7 +245,7 @@ fn ui(f: &mut Frame, app: &mut App) {
         .label("Name")
         .placeholder("Enter your name...")
         .theme(theme);
-    let _region = input.render_stateful(f, chunks[3]);
+    let _region = input.render_stateful(chunks[3], f.buffer_mut());
 
     // Progress
     let progress = Progress::new(app.progress_value)

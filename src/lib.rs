@@ -27,7 +27,7 @@
 //!
 //!     // Render and get click regions
 //!     let cb_region = checkbox.render_stateful(area, frame.buffer_mut());
-//!     let input_region = input.render_stateful(frame, input_area);
+//!     let input_region = input.render_stateful(input_area, frame.buffer_mut());
 //!     let btn_region = button.render_stateful(button_area, frame.buffer_mut());
 //! }
 //! ```

@@ -72,7 +72,7 @@ match event {
 let input = Input::new(&input_state)
     .label("Name")
     .focused(focus.is_focused(&Element::NameInput));
-let click_region = input.render_stateful(frame, area);
+let click_region = input.render_stateful(area, frame.buffer_mut());
 
 // Handle mouse clicks
 if let Some(element) = click_region.contains(mouse_x, mouse_y) {

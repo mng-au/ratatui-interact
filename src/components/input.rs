@@ -24,13 +24,13 @@
 //! ```
 
 use ratatui::{
-    Frame,
+    buffer::Buffer,
     layout::Rect,
     style::{Color, Style},
     text::{Line, Span},
     widgets::{Block, Borders, Paragraph},
 };
-
+use ratatui::widgets::Widget;
 use crate::traits::{ClickRegion, FocusId};
 
 /// Actions an input can emit.
@@ -469,7 +469,7 @@ impl<'a> Input<'a> {
     }
 
     /// Render the input and return the click region.
-    pub fn render_stateful(self, frame: &mut Frame, area: Rect) -> ClickRegion<InputAction> {
+    pub fn render_stateful(self, area: Rect, buf: &mut Buffer) -> ClickRegion<InputAction> {
         let border_color = if !self.state.enabled {
             self.style.disabled_border
         } else if self.state.focused {
@@ -533,9 +533,9 @@ impl<'a> Input<'a> {
         let paragraph = Paragraph::new(display_line);
 
         if let Some(block) = block {
-            frame.render_widget(block, area);
+            block.render(area, buf);
         }
-        frame.render_widget(paragraph, inner_area);
+        paragraph.render(inner_area, buf);
 
         ClickRegion::new(area, InputAction::Focus)
     }

@@ -227,7 +227,7 @@ fn ui(f: &mut Frame, app: &mut App) {
             3,
         );
 
-        let region = input_widget.render_stateful(f, input_area);
+        let region = input_widget.render_stateful(input_area, f.buffer_mut());
         app.click_regions.register(region.area, idx);
     }
 
