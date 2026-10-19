@@ -23,6 +23,8 @@
 //! assert_eq!(state.text, "Hello !");
 //! ```
 
+use crate::traits::{ClickRegion, FocusId};
+use ratatui::widgets::Widget;
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -30,8 +32,6 @@ use ratatui::{
     text::{Line, Span},
     widgets::{Block, Borders, Paragraph},
 };
-use ratatui::widgets::Widget;
-use crate::traits::{ClickRegion, FocusId};
 
 /// Actions an input can emit.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -739,5 +739,126 @@ mod tests {
 
         assert_eq!(style.focused_border, Color::Cyan);
         assert_eq!(style.text_fg, Color::Green);
+    }
+}
+
+#[cfg(feature = "pantry")]
+pub mod ingredient {
+    use super::{Input, InputState};
+    use crate::events::is_left_click;
+    use ratatui::buffer::Buffer;
+    use ratatui::crossterm::event::{KeyCode, MouseEvent};
+    use ratatui::layout::{Constraint, Layout, Position, Rect};
+    use tui_pantry::{Ingredient, PropInfo};
+
+    pub struct InputIngredient {
+        state: InputState,
+    }
+
+    impl InputIngredient {
+        pub fn new() -> Self {
+            Self {
+                state: InputState::new("Type something..."),
+            }
+        }
+    }
+
+    impl Default for InputIngredient {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    impl Ingredient for InputIngredient {
+        fn group(&self) -> &str {
+            "Interactive"
+        }
+
+        fn name(&self) -> &str {
+            "Input"
+        }
+
+        fn source(&self) -> &str {
+            "ratatui_interact::components::input"
+        }
+
+        fn description(&self) -> &str {
+            "Single-line text input with cursor movement, editing, label and placeholder support"
+        }
+
+        fn props(&self) -> &[PropInfo] {
+            &[
+                PropInfo {
+                    name: "text",
+                    ty: "&str",
+                    description: "Initial text content",
+                },
+                PropInfo {
+                    name: "label",
+                    ty: "&str",
+                    description: "Border label",
+                },
+                PropInfo {
+                    name: "placeholder",
+                    ty: "&str",
+                    description: "Placeholder text",
+                },
+            ]
+        }
+
+        fn render(&self, area: Rect, buf: &mut Buffer) {
+            let [one_row, _rest] = area.layout(&Layout::vertical([Constraint::Length(1), Constraint::Min(0)]));
+            Input::new(&self.state)
+                .label("Input")
+                .placeholder("Type something...")
+                .render_stateful(one_row, buf);
+        }
+
+        fn interactive(&self) -> bool {
+            true
+        }
+
+        fn handle_key(&mut self, code: KeyCode) -> bool {
+            match code {
+                KeyCode::Char(c) => {
+                    self.state.insert_char(c);
+                    true
+                }
+                KeyCode::Backspace => {
+                    self.state.delete_char_backward();
+                    true
+                }
+                KeyCode::Left => {
+                    self.state.move_left();
+                    true
+                }
+                KeyCode::Right => {
+                    self.state.move_right();
+                    true
+                }
+                KeyCode::Home => {
+                    self.state.move_home();
+                    true
+                }
+                KeyCode::End => {
+                    self.state.move_end();
+                    true
+                }
+                _ => false,
+            }
+        }
+        
+        fn handle_mouse(&mut self, event: MouseEvent, area: Rect) -> bool {
+            if is_left_click(&event) && area.contains(Position::new(event.column, event.row)) {
+                self.state.focused = true;
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    pub fn ingredients() -> Vec<Box<dyn Ingredient>> {
+        vec![Box::new(InputIngredient::new())]
     }
 }

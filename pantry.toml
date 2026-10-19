@@ -1,0 +1,8 @@
+[config]
+theme = "dark"
+
+[ingredients]
+source = "ratatui_interact"
+modules = [
+    "components::input",
+]
