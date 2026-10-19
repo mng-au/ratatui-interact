@@ -807,7 +807,10 @@ pub mod ingredient {
         }
 
         fn render(&self, area: Rect, buf: &mut Buffer) {
-            let [one_row, _rest] = area.layout(&Layout::vertical([Constraint::Length(1), Constraint::Min(0)]));
+            let [one_row, _rest] = area.layout(&Layout::vertical([
+                Constraint::Length(3),
+                Constraint::Min(0),
+            ]));
             Input::new(&self.state)
                 .label("Input")
                 .placeholder("Type something...")
@@ -847,7 +850,7 @@ pub mod ingredient {
                 _ => false,
             }
         }
-        
+
         fn handle_mouse(&mut self, event: MouseEvent, area: Rect) -> bool {
             if is_left_click(&event) && area.contains(Position::new(event.column, event.row)) {
                 self.state.focused = true;
